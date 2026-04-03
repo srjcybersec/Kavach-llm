@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  ANALYST
+  VIEWER
+}
+
+enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+  SUSPENDED
+}
+
+enum PolicyAction {
+  ALLOW
+  BLOCK
+  REDACT_PII
+  WARN_USER
+  RATE_LIMIT
+  QUARANTINE
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  passwordHash  String
+  role           Role            @default(ANALYST)
+  createdAt      DateTime        @default(now())
+
+  apiKeys        ApiKey[]
+  policyRules    PolicyRule[]
+  sessions       Session[]
+  auditLogs      AuditLog[]
+
+  adminFeedbackEntries FeedbackEntry[] @relation("Feedback_admin")
+}
+
+model ApiKey {
+  id               String         @id @default(uuid())
+  userId           String
+  keyHash          String         @unique
+  label            String
+  reputationScore Float          @default(0)
+  status           ApiKeyStatus  @default(ACTIVE)
+  lastUsed         DateTime?
+  createdAt        DateTime       @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auditLogs AuditLog[]
+}
+
+model PolicyRule {
+  id        String        @id @default(uuid())
+  userId    String
+  condition Json
+  action    PolicyAction
+  priority  Int           @default(0)
+  enabled   Boolean       @default(true)
+  preset     String?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id             String   @id @default(uuid())
+  userId         String
+  riskScore      Float    @default(0)
+  messageCount   Int      @default(0)
+  createdAt      DateTime @default(now())
+  lastActiveAt   DateTime @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auditLogs AuditLog[]
+}
+
+model AuditLog {
+  id              String   @id @default(uuid())
+  sessionId       String
+  apiKeyId        String
+  userId          String
+  inputHash       String
+  threatCategory  String
+  confidence      Float
+  action          PolicyAction
+  responseHash    String
+  latencyMs       Int
+  piiFields       Json?
+  scanBreakdown   Json?
+  createdAt       DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  apiKey  ApiKey  @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  threatEvents      ThreatEvent[]
+  feedbackEntries   FeedbackEntry[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([threatCategory])
+  @@index([sessionId])
+}
+
+model ThreatEvent {
+  id          String   @id @default(uuid())
+  auditLogId  String
+  category    String
+  severity    String
+  description String?
+  resolved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  auditLog AuditLog @relation(fields: [auditLogId], references: [id], onDelete: Cascade)
+
+  @@index([auditLogId])
+}
+
+model FeedbackEntry {
+  id                String   @id @default(uuid())
+  auditLogId       String
+  originalCategory String
+  correctedCategory String
+  adminId           String
+  createdAt         DateTime @default(now())
+
+  auditLog AuditLog @relation(fields: [auditLogId], references: [id], onDelete: Cascade)
+  admin    User     @relation("Feedback_admin", fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+}
+
