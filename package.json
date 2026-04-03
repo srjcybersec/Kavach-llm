@@ -1,0 +1,27 @@
+{
+  "name": "kavach-llm",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n frontend,backend \"npm run dev -w @kavach-llm/frontend\" \"npm run dev -w @kavach-llm/backend\"",
+    "build": "npm run build -w @kavach-llm/frontend && npm run build -w @kavach-llm/backend",
+    "lint": "npm run lint -w @kavach-llm/frontend && npm run lint -w @kavach-llm/backend",
+    "format": "prettier --write .",
+    "db:migrate": "dotenv -e .env -- npm run prisma:migrate -w @kavach-llm/backend"
+  },
+  "devDependencies": {
+    "concurrently": "*",
+    "dotenv-cli": "*",
+    "eslint": "*",
+    "eslint-config-prettier": "*",
+    "eslint-plugin-import": "*",
+    "eslint-plugin-unused-imports": "*",
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "prettier": "*",
+    "typescript": "*"
+  }
+}
