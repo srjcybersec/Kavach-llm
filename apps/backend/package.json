@@ -1,0 +1,49 @@
+{
+  "name": "@kavach-llm/backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint \"src/**/*.{ts}\"",
+    "test": "vitest run",
+    "prisma:generate": "prisma generate --schema prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema prisma/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
+    "prisma:migrate:create": "prisma migrate dev --schema prisma/schema.prisma --name init --create-only"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.5.0",
+    "@types/pdfkit": "^0.17.5",
+    "@types/supertest": "^7.2.0",
+    "bcrypt": "^6.0.0",
+    "cors": "*",
+    "dotenv": "*",
+    "express": "*",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "@google/generative-ai": "^0.24.0",
+    "pdfkit": "^0.18.0",
+    "pg": "^8.20.0",
+    "prisma": "^6.19.3",
+    "rate-limit-redis": "^4.3.1",
+    "redis": "^5.11.0",
+    "socket.io": "^4.8.3",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/cors": "*",
+    "@types/express": "*",
+    "eslint": "*",
+    "tsx": "*",
+    "typescript": "*"
+  }
+}
