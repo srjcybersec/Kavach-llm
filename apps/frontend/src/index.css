@@ -1,0 +1,107 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+:root {
+  --bg-base: #06060a;
+  --bg-surface: #0c0c12;
+  --bg-card: #111118;
+  --accent-violet: #7c5cff;
+  --accent-teal: #2dd4bf;
+  --accent-red: #fb7185;
+  --accent-amber: #fbbf24;
+  --text-primary: #f4f3f9;
+  --text-secondary: #8b879e;
+  --border: #252336;
+  --glow-violet: rgba(124, 92, 255, 0.45);
+  --glow-teal: rgba(45, 212, 191, 0.35);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-feature-settings: "ss01" on, "cv01" on;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(124, 92, 255, 0.35);
+  color: var(--text-primary);
+}
+
+/* Fixed ambient layers — no pointer events */
+.kavach-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.kavach-ambient__mesh {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse 55% 45% at 15% 10%, rgba(124, 92, 255, 0.14), transparent 55%),
+    radial-gradient(ellipse 45% 40% at 92% 8%, rgba(45, 212, 191, 0.09), transparent 50%),
+    radial-gradient(ellipse 50% 60% at 80% 95%, rgba(124, 92, 255, 0.07), transparent 55%);
+}
+
+.kavach-ambient__grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, black 0%, transparent 72%);
+}
+
+.kavach-ambient__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 85% 70% at 50% 45%, transparent 40%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* Ultra-light scan texture — reads as depth, not “movie hacker” */
+.kavach-ambient__scan {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.4) 3px,
+    rgba(0, 0, 0, 0.4) 4px
+  );
+}
+
+/* Dashboard charts — gentle “breathing” pulse (visible but not loud) */
+@keyframes chart-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(45, 212, 191, 0.1)) drop-shadow(0 0 20px rgba(124, 92, 255, 0.06));
+  }
+  50% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 16px rgba(45, 212, 191, 0.22)) drop-shadow(0 0 28px rgba(124, 92, 255, 0.1));
+  }
+}
+
+.chart-breathe {
+  animation: chart-breathe 3.2s ease-in-out infinite;
+  will-change: opacity, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-breathe {
+    animation: none;
+    filter: none;
+  }
+}
+
